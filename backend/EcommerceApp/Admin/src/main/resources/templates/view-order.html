@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{fragments::header}">
+        <title>View Order</title>
+
+        <!-- PDF / Excel -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+        <!-- jQuery -->
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    </head>
+
+    <body id="page-top">
+
+        <div id="wrapper">
+            <div class="container-fluid">
+                <div class="row">
+                    <div th:replace="~{fragments::sidebar}"></div>
+                        <div class="col-md-10 mt-4">
+
+                            <!-- HEADER -->
+                            <div class="card p-3 mb-3">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <h4 class="fw-bold">
+                                            Order ID:
+                                            <span th:if="${order != null}" th:text="${order.id}"></span>
+                                        </h4>
+                                    </div>
+
+                                    <div class="col-md-6 text-end">
+                                        <button class="btn btn-outline-primary me-2">Export PDF</button>
+                                        <button class="btn btn-outline-success">Export Excel</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                            <!-- ORDER DETAILS -->
+                            <div class="col-md-8">
+                                <div class="card p-3 mb-3">
+                                    <h6 class="text-muted fw-bold">Order Details</h6>
+                                    <table class="table table-bordered mt-2">
+                                        <tbody>
+                                        <tr th:each="entry : ${hMapData}">
+                                            <td th:text="${entry.key.name}"></td>
+                                            <td>₹ <span th:text="${entry.key.costPrice}"></span></td>
+                                            <td th:text="${entry.value}"></td>
+                                            <td>₹ <span th:text="${entry.key.costPrice * entry.value}"></span></td>
+                                        </tr>
+
+                                        <tr class="fw-bold">
+                                            <td colspan="3" class="text-end">Total Items</td>
+                                            <td th:text="${totalItemCount}"></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td colspan="3" class="text-end">Subtotal</td>
+                                            <td>₹ <span th:text="${order.totalPrice}"></span></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td colspan="3" class="text-end">Shipping</td>
+                                            <td class="text-success">Free</td>
+                                        </tr>
+
+                                        <tr class="fw-bold">
+                                            <td colspan="3" class="text-end">Grand Total</td>
+                                            <td>₹ <span th:text="${order.totalPrice}"></span></td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                                <!-- CUSTOMER DETAILS -->
+                                <div class="col-md-4">
+                                    <div class="card p-3 mb-3">
+                                        <h6 class="text-secondary fw-bold">Customer Details</h6>
+
+                                        <p>
+                                            <i class="fas fa-user text-info"></i>
+                                            <span th:text="${customer.firstName + ' ' + customer.lastName}"></span>
+                                        </p>
+
+                                        <p>
+                                            <i class="fas fa-phone text-success"></i>
+                                            <span th:text="${customer.phoneNumber}"></span>
+                                        </p>
+
+                                        <p>
+                                            <i class="fas fa-envelope text-warning"></i>
+                                            <span th:text="${customer.username}"></span>
+                                        </p>
+                                    </div>
+                                </div>
+
+                            </div>
+                                        <!-- MAIN CONTENT -->
+
+                                        <!-- DELIVERY PERSON -->
+                            <div class="row">
+
+                                <div class="col-md-8">
+                                    <div class="card p-3"
+                                         th:if="${deliveryPerson != null}">
+                                        <h6 class="fw-bold text-primary">
+                                            <i class="fas fa-truck"></i> Delivery Person
+                                        </h6>
+
+                                        <p>
+                                            <i class="fas fa-user text-info"></i>
+                                            <span th:text="${deliveryPerson.firstName + ' ' + deliveryPerson.lastName}"></span>
+                                        </p>
+
+                                        <p>
+                                            <i class="fas fa-phone text-success"></i>
+                                            <span th:text="${deliveryPerson.phoneNumber}"></span>
+                                        </p>
+
+                                        <p>
+                                            <i class="fas fa-envelope text-warning"></i>
+                                            <span th:text="${deliveryPerson.username}"></span>
+                                        </p>
+                                    </div>
+
+                                    <div class="alert alert-warning"
+                                         th:if="${deliveryPerson == null}">
+                                        Delivery person not assigned yet.
+                                    </div>
+                                </div>
+
+                                <!-- ACTION -->
+                                <div class="col-md-4">
+                                    <div class="card p-3">
+                                        <a th:href="@{/cancel-order(id=${order.id})}"
+                                           class="btn btn-danger w-100"
+                                           onclick="return confirm('Are you sure you want to cancel this order?');">
+                                            Cancel Order
+                                        </a>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+        </div>
+    </body>
+</html>

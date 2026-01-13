@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org/">
+
+<head th:replace="~{fragments::head}"></head>
+
+<body>
+
+<div th:replace="~{fragments::main-top}"></div>
+
+<header th:replace="~{fragments::main-header}"></header>
+
+<div class="container mt-4">
+
+    <!-- ✅ Conditionally display Success Message -->
+    <div th:if="${success}" class="alert alert-success text-center font-weight-bold shadow-sm" role="alert">
+        Dear <span th:text="${order.customer.firstName} + ' ' + ${order.customer.lastName}"></span>,
+        <span th:text="${success}"></span>
+    </div>
+
+    <!-- ✅ Conditionally display Error Message -->
+    <div th:if="${error}" class="alert alert-danger text-center font-weight-bold shadow-sm" role="alert">
+        <span th:text="${error}"></span> 
+    </div>
+
+    <!-- ✅ View Receipt Button -->
+    <div class="row mb-3" th:if="${order}">
+        <div class="col text-right">
+            <a class="btn btn-outline-primary" th:href="@{/view-order-receipt/{id}(id=${order.id})}">
+            View Receipt</a>
+        </div>
+    </div>
+
+    <!-- ✅ Order Table -->
+    <div class="card shadow-sm mb-4" th:if="${order}">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Ordered Items</h5>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover table-striped m-0">
+                <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Image</th>
+                    <th scope="col">Product Name</th>
+                    <th scope="col">Unit Price</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- 'order.orderDetailList' -->
+                <tr th:each="orderdetail : ${order.orderDetailList}">
+                    <td>
+                        <img class="img-thumbnail"
+                             th:src="'data:image/jpeg;base64,' + ${orderdetail.product.image}"
+                             alt="Product Image" width="120" height="120">
+                    </td>
+                    <td>
+                        <span th:text="${orderdetail.product.name}" class="font-weight-bold text-dark"></span>
+                    </td>
+                    <td>
+                        <span class="text-success font-weight-bold" th:text="'₹' + ${orderdetail.product.costPrice}"></span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ✅ Order Summary Card -->
+    <div class="row justify-content-end" th:if="${order}">
+        <div class="col-md-6 col-lg-4">
+            <div class="card border-success shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Order Summary</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-2">
+                        <strong>Total Quantity:</strong> <span th:text="${order.quantity}"></span>
+                    </p>
+                    <p class="mb-0 d-flex justify-content-between">
+                        <strong>Sub Total:</strong>
+                        <span class="font-weight-bold text-success" th:text="'₹' + ${order.totalPrice}"></span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<footer th:replace="~{fragments::footer}"></footer>
+
+</body>
+</html>

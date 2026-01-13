@@ -1,0 +1,240 @@
+package com.ecommerce.library.service.impl;
+
+import com.ecommerce.library.dto.ProductDto;
+import com.ecommerce.library.exception.ResourceNotFoundException;
+import com.ecommerce.library.mapper.Mapper;
+import com.ecommerce.library.model.Product;
+import com.ecommerce.library.repository.ProductRepository;
+import com.ecommerce.library.service.ProductService;
+import com.ecommerce.library.utils.ImageUpload;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.*;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class ProductServiceImpl implements ProductService {
+    private final ProductRepository productRepository;
+
+    private final ImageUpload imageUpload;
+
+    @Override
+    public List<Product> findAll() {
+        return productRepository.findAll();
+    }
+
+    @Override
+    public List<ProductDto> products() {
+        List<Product> productList = productRepository.getAllProduct();
+        if(productList.isEmpty()){
+            throw new ResourceNotFoundException("Products are not found. Product list is empty.");
+        }
+        return transferData(productList);
+    }
+
+    @Override
+    public List<ProductDto> allProduct() {
+        List<Product> productList = productRepository.findAll();
+        if(productList.isEmpty()){
+            throw new ResourceNotFoundException("Products are not found. Product list is empty.");
+        }
+        List<ProductDto> productDtos = transferData(productList);
+        return productDtos;
+    }
+
+    @Override
+    public Product save(MultipartFile imageProduct, ProductDto productDto) {
+        Product product = new Product();
+        try {
+            if (imageProduct == null) {
+                product.setImage(null);
+            } else {
+                imageUpload.uploadFile(imageProduct);
+                product.setImage(Base64.getEncoder().encodeToString(imageProduct.getBytes()));
+            }
+            product.setName(productDto.getName());
+            product.setDescription(productDto.getDescription());
+            product.setCurrentQuantity(productDto.getCurrentQuantity());
+            product.setCostPrice(productDto.getCostPrice());
+            product.setCategory(productDto.getCategory());
+            product.set_deleted(false);
+            product.set_activated(true);
+            product.setSubCategory(productDto.getSubCategory());
+            return productRepository.save(product);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public Product update(MultipartFile imageProduct, ProductDto productDto) {
+        try {
+            Product productUpdate = productRepository.getReferenceById(productDto.getId());
+            if(productUpdate==null){
+                throw new ResourceNotFoundException("Product is not available to update.");
+            }
+            if (imageProduct.getBytes().length > 0) {
+                if (imageUpload.checkExist(imageProduct)) {
+                    productUpdate.setImage(productUpdate.getImage());
+                } else {
+                    imageUpload.uploadFile(imageProduct);
+                    productUpdate.setImage(Base64.getEncoder().encodeToString(imageProduct.getBytes()));
+                }
+            }
+            productUpdate.setCategory(productDto.getCategory());
+            productUpdate.setId(productUpdate.getId());
+            productUpdate.setName(productDto.getName());
+            productUpdate.setDescription(productDto.getDescription());
+            productUpdate.setCostPrice(productDto.getCostPrice());
+            productUpdate.setSalePrice(productDto.getSalePrice());
+            productUpdate.setCurrentQuantity(productDto.getCurrentQuantity());
+            return productRepository.save(productUpdate);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public void enableById(Long id) {
+        Product product = productRepository.getById(id);
+        product.set_activated(true);
+        product.set_deleted(false);
+        productRepository.save(product);
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        Product product = productRepository.getById(id);
+        product.set_deleted(true);
+        product.set_activated(false);
+        productRepository.save(product);
+    }
+
+    @Override
+    public ProductDto getById(Long id) {
+        ProductDto productDto = new ProductDto();
+        Product product = productRepository.getById(id);
+        productDto.setId(product.getId());
+        productDto.setName(product.getName());
+        productDto.setDescription(product.getDescription());
+        productDto.setCostPrice(product.getCostPrice());
+        productDto.setSalePrice(product.getSalePrice());
+        productDto.setCurrentQuantity(product.getCurrentQuantity());
+        productDto.setCategory(product.getCategory());
+        productDto.setImage(product.getImage());
+        productDto.setSubCategory(product.getSubCategory());
+        return productDto;
+    }
+
+    @Override
+    public Product findById(Long id) {
+        return productRepository.findById(id)
+                .orElseThrow(()->new ResourceNotFoundException("Product not found with ID-"+id));
+    }
+
+    @Override
+    public Page<ProductDto> searchProducts(int pageNo, String keyword) {
+        List<Product> products = productRepository.findAllByNameOrDescription(keyword);
+        List<ProductDto> productDtoList = transferData(products);
+        Pageable pageable = PageRequest.of(pageNo, 5);
+        Page<ProductDto> dtoPage = toPage(productDtoList, pageable);
+        return dtoPage;
+    }
+
+    @Override
+    public Page<ProductDto> getAllProducts(int pageNo) {
+        Pageable pageable = PageRequest.of(pageNo, 6);
+        List<ProductDto> productDtoLists = this.allProduct();
+        Page<ProductDto> productDtoPage = toPage(productDtoLists, pageable);
+        return productDtoPage;
+    }
+
+    @Override
+    public Page<ProductDto> getProductsByCategoryPaginated(Long categoryId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        Page<Product> productPage = productRepository.findByCategoryId(categoryId, pageable);
+        return productPage.map(Mapper::productToProductDto);
+    }
+
+    @Override
+    public Page<ProductDto> getProductsBySubCategoryPaginated(Long subCategoryId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        Page<Product> productPage = productRepository.findBySubCategoryId(subCategoryId, pageable);
+        return productPage.map(Mapper::productToProductDto);
+    }
+
+    @Override
+    public Page<ProductDto> getAllProductsPaged(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        Page<Product> productPage = productRepository.findAll(pageable);
+        return productPage.map(Mapper::productToProductDto);
+    }
+
+    @Override
+    public List<ProductDto> findByCategoryId(Long id) {
+        List<Product> productList = productRepository.getProductByCategoryId(id);
+        if(productList.isEmpty()){
+            throw new ResourceNotFoundException("Products not found for category with ID-"+id);
+        }
+        return transferData(productList);   
+    }
+
+    @Override
+    public List<ProductDto> searchProducts(String keyword) {
+        return transferData(productRepository.searchProducts(keyword));
+    }
+
+    @Override
+    public int reduceProductStock(Long id, int qty) {
+        return productRepository.reduceStock(id, qty);
+    }
+
+    private Page toPage(List list, Pageable pageable) {
+        if (pageable.getOffset() >= list.size()) {
+            return Page.empty();
+        }
+        int startIndex = (int) pageable.getOffset();
+        int endIndex = ((pageable.getOffset() + pageable.getPageSize()) > list.size())
+                ? list.size()
+                : (int) (pageable.getOffset() + pageable.getPageSize());
+        List subList = list.subList(startIndex, endIndex);
+        return new PageImpl(subList, pageable, list.size());
+    }
+
+    private List<ProductDto> transferData(List<Product> products) {
+        List<ProductDto> productDtos = new ArrayList<>();
+        for (Product product : products) {
+            ProductDto productDto = new ProductDto();
+            productDto.setId(product.getId());
+            productDto.setName(product.getName());
+            productDto.setCurrentQuantity(product.getCurrentQuantity());
+            productDto.setCostPrice(product.getCostPrice());
+            productDto.setSalePrice(product.getSalePrice());
+            productDto.setDescription(product.getDescription());
+            productDto.setImage(product.getImage());
+            productDto.setCategory(product.getCategory());
+            productDto.setActivated(product.is_activated());
+            productDto.setDeleted(product.is_deleted());
+            productDto.setSubCategory(product.getSubCategory());
+
+            productDtos.add(productDto);
+        }
+        return productDtos;
+    }
+
+    @Override
+    public List<Product> getProductsBySubCategoryId(Long id) {
+        List<Product> productList  = productRepository.findProductsBySubCategoryId(id);
+        if(productList.isEmpty()){
+            throw new ResourceNotFoundException("Products not found for subcategory ID-"+id);
+        }
+        return productList;
+    }
+}

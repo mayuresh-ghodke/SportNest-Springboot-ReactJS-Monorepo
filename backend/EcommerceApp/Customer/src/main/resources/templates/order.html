@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org/">
+<head th:replace="~{fragments::head}"></head>
+
+<head>
+    <style>
+        #reviewBtn {
+            height: 35px;
+            width: 100%;
+            background-color: ghostwhite;
+            border-radius: 10px;
+            border: 1px solid black;
+            color: black;
+        }
+    </style>
+</head>
+
+<body class="bg-light">
+    <div th:replace="fragments ::main-top"></div>
+    <header th:replace="~{fragments::main-header}"></header>
+    <div class="mt-1">
+        <div class="container p-1">
+            <div class="row">
+                <div class="col-md-12">
+                    <div th:if="${success}" class="alert alert-success alert-dismissible fade show text-center" role="alert">
+    <p th:text="${success}"></p>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+                    <div class="mb-5">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h3 class="mb-4 mt-5">Your Orders</h3>
+                            </div>
+                            <div class="col-md-4 mt-5">
+                                <!-- <form method="get" th:action="@{/orders}">
+                                            <div class="input-group">
+                                                <select name="status" class="form-select">
+                                                    <option value="">-- Filter by Status --</option>
+                                                    <option value="ALL">ALL</option>
+                                                    <option th:each="status : ${allStatuses}" 
+                                                            th:value="${status}" 
+                                                            th:text="${status}" 
+                                                            th:selected="${selectedStatus == status}">
+                                                    </option>
+                                                </select>
+                                                <button type="submit" class="btn btn-primary">Filter</button>
+                                            </div>
+                                        </form> -->
+                            </div>
+                            <div class="col-md-2">
+                                <p class="mt-5 mb-4 bg-dark text-white p-3 text-center font-weight-bold" th:text="'Total Orders: '+${orders.size}" style="border-radius: 30px;"></p>
+                            </div>
+                        </div>
+                        <div th:if="${orders.size == 0}" class="row text-center">
+                            <div class="col-12">
+                                <h4 class="text-center">No Orders Found.</h4>
+                                <img th:src="@{/images/empty_orders.jpeg}" class="img-fluid" alt="Empty Orders" style="max-width: 300px;">
+                            </div>
+                        </div>
+
+                        <table class="table table-bordered table-hover" th:if="${orders.size > 0}">
+                            <thead class="bg-dark text-white">
+                                <tr>
+                                    <th class="">Order Date</th>
+                                    <th>Delivery Date</th>
+                                    <th class="">Order Status</th>
+                                    <th class="">Quantity</th>
+                                    <th>Total Price</th>
+                                    <th class="">Payment Method</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="order : ${orders}">
+                                    <td class="order-date">
+                                        <span th:text="${#dates.format(order.orderDate, 'dd MMMM yyyy')}"></span>
+                                    </td>
+                                    <td>
+                                        <span th:if="${order.deliveryDate != null}" th:text="${#dates.format(order.deliveryDate, 'dd MMMM yyyy')}"></span>
+                                        <span th:if="${order.deliveryDate == null}">Pending Delivery Date</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge"
+                                              th:classappend="${order.orderStatus == 'PENDING' ? 'bg-warning text-dark' :
+                                                               order.orderStatus == 'CONFIRMED' ? 'bg-info text-dark' :
+                                                               order.orderStatus == 'SHIPPED' ? 'bg-primary' :
+                                                               order.orderStatus == 'DELIVERED' ? 'bg-success' :
+                                                               order.orderStatus == 'CANCELLED' ? 'bg-danger' :
+                                                               order.orderStatus == 'ASSIGNED' ? 'bg-secondary' : 'bg-light text-dark'}"
+                                              th:text="${order.orderStatus}"></span>
+                                    </td>
+                                    <td th:text="${order.quantity}"></td>
+                                    <td class="total-pr">
+                                        <strong class="text-success">₹ <span th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 2, 'POINT')}"></span></strong>
+                                    </td>
+                                    <td>
+                                        <span>[(${order.paymentMethod})]</span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex flex-column">
+                                            <a th:if="${order.orderStatus != 'CANCELLED' AND order.orderStatus != 'ASSIGNED' AND order.orderStatus != 'DELIVERED'}"
+                                               th:href="@{/cancel-order/{id}(id=${order.id})}"
+                                               class="btn btn-outline-danger btn-sm mb-2">Cancel Order</a>
+
+                                            <a th:if="${order.isDelivered == true}"
+                                               th:href="@{/write-review/{orderId}/{productId}(orderId=${order.id}, productId=${order.orderDetails[0].product.id})}"
+                                               class="btn btn-outline-primary btn-sm">Write Review</a>
+
+                                            <a th:href="@{/view-order-receipt/{id}(id=${order.id})}"
+                                               class="btn btn-outline-info btn-sm mt-2">View Receipt</a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer th:replace="~{fragments::footer}"></footer>
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+                integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+                crossorigin="anonymous"></script>
+    </body>
+</html>

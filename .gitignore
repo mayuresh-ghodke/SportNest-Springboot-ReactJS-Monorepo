@@ -1,0 +1,56 @@
+
+# ============ ENV / SECRETS ===============
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# ============ SPRING BOOT =================
+
+# Local-only config (all modules)
+**/application-local.properties
+
+# Maven build output
+**/target/
+
+# Logs
+**/*.log
+
+# ============ REACT / NODE ================
+
+# Node dependencies
+**/node_modules/
+
+# React build output
+**/build/
+**/dist/
+
+# Vite / Webpack cache
+**/.cache/
+
+# ============ DOCKER ======================
+
+# Docker override files
+docker-compose.override.yml
+
+# ============ IDE FILES ===================
+
+# IntelliJ / Eclipse / VS Code
+.idea/
+.vscode/
+.settings/
+*.iml
+.classpath
+.project
+
+# ============ OS FILES ====================
+
+.DS_Store
+Thumbs.db
+
+# ============ TEMP FILES ==================
+
+*.tmp
+*.swp
+*.bak

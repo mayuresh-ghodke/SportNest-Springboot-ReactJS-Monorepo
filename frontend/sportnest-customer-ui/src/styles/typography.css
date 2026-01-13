@@ -1,0 +1,11 @@
+h1 { font-size: var(--fs-xxl); }
+h2 { font-size: var(--fs-xl); }
+h3 { font-size: var(--fs-lg); }
+
+p, span, a {
+  font-size: var(--fs-sm);
+}
+
+.small-text {
+  font-size: var(--fs-xs);
+}

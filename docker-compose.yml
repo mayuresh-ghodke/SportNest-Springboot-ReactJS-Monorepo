@@ -1,0 +1,70 @@
+version: "3.8"
+
+services:
+  mysqldb:
+    image: mysql:8
+    container_name: mysqldb
+    restart: always
+    ports:
+      - "3307:3306"
+    env_file:
+      - .env
+    environment:
+      MYSQL_ROOT_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      MYSQL_DATABASE: ecommerce_springboot
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${SPRING_DATASOURCE_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - ecommerce-network
+
+  customer:
+    build: ./backend/EcommerceApp/Customer
+    container_name: customer-service
+    ports:
+      - "${CUSTOMER_PORT}:${CUSTOMER_PORT}"
+    env_file:
+      - .env
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+    networks:
+      - ecommerce-network
+
+  admin:
+    build: ./backend/EcommerceApp/Admin
+    container_name: admin-service
+    ports:
+      - "${ADMIN_PORT}:${ADMIN_PORT}"
+    env_file:
+      - .env
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+    networks:
+      - ecommerce-network
+
+  delivery:
+    build: ./backend/EcommerceApp/Delivery
+    container_name: delivery-service
+    ports:
+      - "${DELIVERY_PORT}:${DELIVERY_PORT}"
+    env_file:
+      - .env
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+    networks:
+      - ecommerce-network
+
+networks:
+  ecommerce-network:
+    driver: bridge

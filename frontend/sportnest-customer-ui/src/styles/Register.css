@@ -1,0 +1,77 @@
+.register-page {
+  min-height: 100vh;
+  width: 100%;
+  background: linear-gradient(
+      rgba(0, 0, 0, 0.55),
+      rgba(0, 0, 0, 0.55)
+    ),
+    url("../../public/images/bg-register-new.jpg");
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.register-glass {
+  width: 100%;
+  max-width: 850px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(14px);
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.35);
+  color: #fff;
+}
+
+.register-glass h2 {
+  text-align: center;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+
+.subtitle {
+  text-align: center;
+  opacity: 0.9;
+  margin-bottom: 25px;
+}
+
+.register-glass .form-control {
+  height: 48px;
+  border-radius: 10px;
+  border: none;
+  padding-left: 15px;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.register-glass .form-control:focus {
+  box-shadow: 0 0 0 2px #000;
+}
+
+.signupBtn {
+  width: 100%;
+  height: 48px;
+  background: linear-gradient(135deg, #000, #333);
+  border: none;
+  color: #fff;
+  font-weight: 600;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.register-glass a {
+  color: #fff;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.register-glass a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .register-glass {
+    padding: 25px;
+  }
+}

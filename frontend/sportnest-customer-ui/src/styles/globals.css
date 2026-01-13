@@ -1,0 +1,26 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-primary);
+  font-size: var(--fs-md);
+  color: var(--text-dark);
+  background-color: var(--bg-light);
+}
+
+/* Common reusable utilities */
+.text-primary {
+  color: var(--primary-color);
+}
+
+.bg-primary {
+  background-color: var(--primary-color);
+}
+
+.btn-primary-custom {
+  background-color: var(--primary-color);
+  color: var(--text-light);
+  border-radius: var(--radius-lg);
+}

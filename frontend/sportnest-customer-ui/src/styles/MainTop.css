@@ -1,0 +1,76 @@
+.main-top {
+  background: #fff;
+  border-bottom: 1px solid #eee;
+  padding: 10px 0;
+}
+
+/* LOGO */
+.top-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.top-logo img {
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+}
+
+.top-logo span {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #000;
+  letter-spacing: 1px;
+}
+
+.top-logo span span {
+  color: #3700B3;
+}
+
+/* TAGLINE */
+.tagline {
+  color: #777;
+  font-style: italic;
+}
+
+/* WISHLIST */
+.wishlist-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid #dc3545;
+  color: #dc3545;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.wishlist-btn i {
+  font-size: 0.9rem;
+}
+
+.wishlist-btn:hover {
+  background: #dc3545;
+  color: #fff;
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .tagline {
+    display: none;
+  }
+
+  .main-top {
+    text-align: center;
+  }
+
+  .wishlist-btn {
+    margin-top: 8px;
+  }
+}

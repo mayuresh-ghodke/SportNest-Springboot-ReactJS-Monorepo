@@ -1,0 +1,29 @@
+:root {
+  /* ========== COLORS ========== */
+  --primary-color: #3700B3;
+  --secondary-color: #325ea8;
+  --accent-color: #f39c12;
+  --danger-color: #de2336;
+
+  --text-dark: #212529;
+  --text-light: #ffffff;
+  --bg-light: #f8f9fa;
+  --bg-dark: #000000;
+
+  /* ========== FONTS ========== */
+  --font-primary: 'Times New Roman', serif;
+  --font-secondary: 'Roboto', sans-serif;
+
+  /* ========== FONT SIZES ========== */
+  --fs-xs: 12px;
+  --fs-sm: 14px;
+  --fs-md: 16px;
+  --fs-lg: 18px;
+  --fs-xl: 22px;
+  --fs-xxl: 28px;
+
+  /* ========== SPACING ========== */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+}

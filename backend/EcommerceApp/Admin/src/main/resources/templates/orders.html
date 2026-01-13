@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{fragments::header}">
+        <title>View Orders</title>
+
+        <!-- PDF / Excel -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+        <!-- jQuery -->
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body id="page-top">
+    <div id="wrapper">
+        <div class="container-fluid">
+            <div class="row">
+
+            <div th:replace="~{fragments::sidebar}"></div>
+
+                <div class="col-md-10 mt-4">
+                <div class="card p-3 mb-3">
+                    <div class="row align-items-center">
+
+                        <div class="col-md-2">
+                            <button id="generatePdf" class="btn btn-outline-primary w-100">
+                                Export PDF
+                            </button>
+                        </div>
+
+                        <div class="col-md-2">
+                            <button id="generateExcel" class="btn btn-outline-success w-100">
+                                Export Excel
+                            </button>
+                        </div>
+
+                        <div class="col-md-6">
+                            <form method="get" th:action="@{/orders}">
+                                <div class="input-group">
+                                    <select name="status" class="form-select">
+                                        <option value="">-- Filter by Status --</option>
+                                        <option th:each="s : ${allStatuses}"
+                                                th:value="${s}"
+                                                th:text="${s}"
+                                                th:selected="${selectedStatus == s}">
+                                        </option>
+                                    </select>
+                                    <button class="btn btn-primary">Filter</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="col-md-2 text-center bg-dark text-white rounded-pill p-2">
+                            <div>This: <strong th:text="${totalOrders}"></strong></div>
+                            <div>All: <strong th:text="${allOrders}"></strong></div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div th:if="${success}" class="alert alert-success text-center">
+                    <span th:text="${success}"></span>
+                </div>
+
+                <div class="card">
+                    <table class="table table-hover text-center" id="ordersTable">
+
+                        <thead class="bg-light">
+                        <tr>
+                            <th>O-ID</th>
+                            <th>Customer</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Price</th>
+                            <th>Delivery Person</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        <tr th:each="order : ${orders}">
+
+                            <td><strong>[(${order.id})]</strong></td>
+
+                            <td>
+                                [(${order.customer.firstName})]
+                                [(${order.customer.lastName})]
+                            </td>
+
+                            <td>[(${order.orderDate})]</td>
+
+                            <!-- STATUS -->
+                            <td>
+                                <span th:if="${order.isDelivered}"
+                                      class="badge bg-success">Delivered</span>
+
+                                <span th:if="${!order.isDelivered and order.accept}"
+                                      class="badge bg-primary"
+                                      th:text="${order.orderStatus}"></span>
+
+                                <span th:if="${!order.accept}"
+                                      class="badge bg-warning"
+                                      th:text="${order.orderStatus}"></span>
+                            </td>
+
+                            <td><strong>₹ [(${order.totalPrice})]</strong></td>
+
+                            <!-- DELIVERY PERSON -->
+                            <td>
+                                <div th:if="${order.deliveryPerson != null}">
+                                    <div th:text="${order.deliveryPerson.firstName + ' ' + order.deliveryPerson.lastName}"></div>
+                                    <small th:text="${order.deliveryPerson.phoneNumber}"></small>
+                                </div>
+
+                                <form th:if="${order.accept and order.deliveryPerson == null}"
+                                      th:action="@{/assign-delivery-person/{id}(id=${order.id})}" method="get">
+                                    <select name="delivery_person" class="form-select mb-1">
+                                        <option value="">-- Select --</option>
+                                        <option th:each="dp : ${deliveryPersons}"
+                                                th:if="${dp.isAvailable}"
+                                                th:value="${dp.id}"
+                                                th:text="${dp.firstName + ' ' + dp.lastName}">
+                                        </option>
+                                    </select>
+                                    <button class="btn btn-sm btn-outline-dark w-100">Assign</button>
+                                </form>
+                            </td>
+
+                            <!-- ACTION -->
+                            <td>
+                                <a th:href="@{/view-order/{id}(id=${order.id})}"
+                                   class="btn btn-info btn-sm mb-1">View</a>
+
+                                <div th:if="${!order.accept}">
+                                    <a th:href="@{/accept-order(id=${order.id})}"
+                                       class="btn btn-success btn-sm">Accept</a>
+                                    <a th:href="@{/cancel-order(id=${order.id})}"
+                                       class="btn btn-danger btn-sm">Cancel</a>
+                                </div>
+
+                                <div th:if="${order.accept and order.deliveryPerson == null}">
+                                    <a th:href="@{/cancel-order(id=${order.id})}"
+                                       class="btn btn-danger btn-sm">Cancel</a>
+                                </div>
+                            </td>
+
+                        </tr>
+
+                        <tr th:if="${orders.size() == 0}">
+                            <td colspan="10" class="text-muted">
+                                No orders found.
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
