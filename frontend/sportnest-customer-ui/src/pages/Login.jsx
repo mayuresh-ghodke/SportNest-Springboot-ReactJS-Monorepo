@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 import "../styles/Login.css";
+import api from "../services/customer-helper";
 
 const Login = () => {
 
@@ -21,10 +22,9 @@ const Login = () => {
 
     try {
       setLoading(true);
-      const res = await axios.post(
-        "http://localhost:8020/shop/api/auth/login",
-        { username: email, password },
-        { headers: { "Content-Type": "application/json" } }
+      const res = await api.post("/auth/login", { username: email, password },{ headers: 
+          { "Content-Type": "application/json" } 
+        }
       );
 
       setToken(res.data.token);
